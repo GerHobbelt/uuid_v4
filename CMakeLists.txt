@@ -19,7 +19,7 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   target_compile_options(uuid_v4 INTERFACE $<$<CONFIG:Debug>:/MT> $<$<CONFIG:Release>:/MTd>)
 endif ()
 target_compile_features(uuid_v4 INTERFACE cxx_std_17)
-target_include_directories(uuid_v4 INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/)
+target_include_directories(uuid_v4 INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
 if (test)
   if (test_use_internal_googletest)
