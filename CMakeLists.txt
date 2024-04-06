@@ -10,6 +10,7 @@ option(test "Build all tests." OFF)
 option(test_use_internal_googletest "Build googletest, do not use it from system." ON)
 option(benchmark "Build benchmarks." OFF)
 option(benchmark_use_internal_googlebenchmark "Build google benchmark, do not use it from system." ON)
+option(build_example "Build the example" ON)
 
 add_library(uuid_v4 INTERFACE)
 add_library(uuid_v4::uuid_v4 ALIAS uuid_v4)
@@ -56,8 +57,10 @@ if (benchmark)
   add_subdirectory (benchmarks)
 endif ()
 
+if(build_example)
 add_executable(example example.cpp)
 target_link_libraries (example PRIVATE uuid_v4)
+endif()
 
 ################################################################################
 ## PACKAGE SUPPORT
