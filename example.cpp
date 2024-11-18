@@ -6,7 +6,7 @@
 
 #define IT 1000000000
 
-void debugUUID(const UUIDv4::UUID &uuid) {
+static void debugUUID(const UUIDv4::UUID &uuid) {
   std::string bytes = uuid.bytes();
   for (int i=0; i<16; i++) {
     printf("%02hhx", bytes[i]);
@@ -14,7 +14,12 @@ void debugUUID(const UUIDv4::UUID &uuid) {
   printf("\n");
 }
 
-int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[]) {
+#if defined(BUILD_MONOLITHIC)
+#define main   uuid4_example_main
+#endif
+
+extern "C"
+int main([[maybe_unused]] int argc, [[maybe_unused]] const char** argv) {
   UUIDv4::UUIDGenerator<std::mt19937_64> uuidGenerator;
   char txt[37];
   auto t1 = std::chrono::high_resolution_clock::now();

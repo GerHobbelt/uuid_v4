@@ -2,6 +2,7 @@
 #include "gtest/gtest.h"
 
 namespace {
+
   void pb(const std::string &s) {
     for (int i=0; i<16; i++) {
       printf("%02hhx", s[i]);
