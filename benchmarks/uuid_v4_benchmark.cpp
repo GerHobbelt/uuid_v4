@@ -1,3 +1,5 @@
+#define BENCHMARK_FAMILY_ID   "uuid_v4"
+
 #include <random>
 #include <benchmark/benchmark.h>
 #include "uuid_v4.h"
@@ -163,5 +165,9 @@ static void UUIDCompare(benchmark::State& state) {
   }
 }
 BENCHMARK(UUIDCompare);
+
+#if defined(BUILD_MONOLITHIC)
+#define main uuidv4_benchmark_main
+#endif
 
 BENCHMARK_MAIN();
