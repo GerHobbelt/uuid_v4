@@ -10,17 +10,17 @@ option(test "Build all tests." OFF)
 option(test_use_internal_googletest "Build googletest, do not use it from system." ON)
 option(benchmark "Build benchmarks." OFF)
 option(benchmark_use_internal_googlebenchmark "Build google benchmark, do not use it from system." ON)
+option(build_example "Build the example" ON)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
+add_library(uuid_v4 INTERFACE)
+add_library(uuid_v4::uuid_v4 ALIAS uuid_v4)
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+  target_compile_options(uuid_v4 INTERFACE "-march=native")
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+  target_compile_options(uuid_v4 INTERFACE $<$<CONFIG:Debug>:/MT> $<$<CONFIG:Release>:/MTd>)
 endif ()
+target_compile_features(uuid_v4 INTERFACE cxx_std_17)
+target_include_directories(uuid_v4 INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 
 if (test)
   if (test_use_internal_googletest)
@@ -57,17 +57,10 @@ if (benchmark)
   add_subdirectory (benchmarks)
 endif ()
 
+if(build_example)
 add_executable(example example.cpp)
-target_link_libraries (example)
-
-add_library(${PROJECT_NAME} INTERFACE)
-add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-
-if (NOT CMAKE_VERSION VERSION_LESS 3.8)
-    target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
+target_link_libraries (example PRIVATE uuid_v4)
 endif()
-
-target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>)
 
 ################################################################################
 ## PACKAGE SUPPORT
@@ -76,13 +69,13 @@ target_include_directories(${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:${CMAKE_C
 set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
 set(include_install_dir "include")
-set(config_install_dir "lib/cmake/${PROJECT_NAME}")
+set(config_install_dir "lib/cmake/uuid_v4")
 
 
-set(version_config "${generated_dir}/${PROJECT_NAME}ConfigVersion.cmake")
-set(project_config "${generated_dir}/${PROJECT_NAME}Config.cmake")
-set(targets_export_name "${PROJECT_NAME}Targets")
-set(namespace "${PROJECT_NAME}::")
+set(version_config "${generated_dir}/uuid_v4ConfigVersion.cmake")
+set(project_config "${generated_dir}/uuid_v4Config.cmake")
+set(targets_export_name "uuid_v4Targets")
+set(namespace "uuid_v4::")
 
 include(CMakePackageConfigHelpers)
 
@@ -101,7 +94,7 @@ set(CMAKE_SIZEOF_VOID_P ${TMP_SIZEOF_VOID_P})
 
 configure_file("Config.cmake.in" "${project_config}" @ONLY)
 
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS uuid_v4
         EXPORT "${targets_export_name}"
         INCLUDES DESTINATION "${include_install_dir}")
 
