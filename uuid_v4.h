@@ -159,7 +159,7 @@ class UUID {
       __m128i y = _mm_load_si128((__m128i*)rhs.data);
 
       __m128i neq = _mm_xor_si128(x, y);
-      return _mm_test_all_zeros(neq, neq);
+      return bool(_mm_test_all_zeros(neq, neq));
     }
 
     friend bool operator<(const UUID &lhs, const UUID &rhs) {
